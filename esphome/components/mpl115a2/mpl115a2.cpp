@@ -34,7 +34,7 @@ void MPL115A2Component::read_coefficients_() {
   this->mpl115a2_a0_ = (float)a0coeff / 8;
   this->mpl115a2_b1_ = (float)b1coeff / 8192;
   this->mpl115a2_b2_ = (float)b2coeff / 16384;
-  this->mpl115a2_c12_ = (float)c12coeff
+  this->mpl115a2_c12_ = (float)c12coeff;
   this->mpl115a2_c12_ /= 4194304.0;
 }
 
@@ -47,11 +47,13 @@ void MPL115A2Component::dump_config() {
 }
 
 void MPL115A2Component::update() {
-  uint8_t cmd[2] = {MPL115A2_REGISTER_STARTCONVERSION, 0};
-  uint8_t buffer[4];
-  this->write(cmd, 2);
+  
   // Wait a bit for the conversion to complete (3ms max)
   this->set_timeout(5, [this]() {
+    uint8_t cmd[2] = {MPL115A2_REGISTER_STARTCONVERSION, 0};
+    uint8_t buffer[4];
+    this->write(cmd, 2);
+    
     cmd[0] = MPL115A2_REGISTER_PRESSURE_MSB;
     this->write(cmd, 1);
     this->read(buffer, 4);
